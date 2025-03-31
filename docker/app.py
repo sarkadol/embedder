@@ -478,6 +478,8 @@ class Embedbase:
                 **self._base_return(dataset_id),
                 "query": query,
                 "similarities": similarities,
+                "length": len(match.data) if match.data else 0,  # changed this and the top_k
+                "TESTOVANI": "TESTOVANI",
             },
         )
 
