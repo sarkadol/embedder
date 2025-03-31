@@ -473,7 +473,8 @@ class Embedbase:
                     #"hash": match.hash,
                     #"embedding": match.embedding,
                     "metadata": match.metadata,
-		    "length": len(match.data) if match.data else 0, # changed this and the top_k
+		            "length": len(match.data) if match.data else 0, # changed this and the top_k
+                    "TESTOVANI": "TESTOVANI",
                 }
             )
         return JSONResponse(
@@ -482,8 +483,6 @@ class Embedbase:
                 **self._base_return(dataset_id),
                 "query": query,
                 "similarities": similarities,
-                "length": len(match.data) if match.data else 0,  # changed this and the top_k
-                "TESTOVANI": "TESTOVANI",
             },
         )
 
