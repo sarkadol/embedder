@@ -481,7 +481,7 @@ class Embedbase:
             metadata = match.metadata or {}
             self.logger.info(f"[DEBUG] Match metadata: {match.metadata}")
             path = metadata.get("path", "")
-            lang = "cz" if path.endswith(".cz.mdx") else "en"
+            lang = "cz" if "/cz/" in path else "en"
 
             if lang != query_lang:
                 self.logger.info(f"Checking match path: {path} → detected lang: {lang}")
