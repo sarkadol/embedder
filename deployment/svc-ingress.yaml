@@ -17,15 +17,15 @@ metadata:
   annotations:
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    nginx.ingress.kubernetes.io/whitelist-source-range: 2001:718:801:42d3::/64,2001:718:801:a0b::/64,2001:718:801:168::/64
+    nginx.ingress.kubernetes.io/whitelist-source-range: 2001:718:801::/48,147.251.0.0/16
 spec:
   ingressClassName: nginx
   tls:
    - hosts:
-       - "embedbase-ol.dyn.cloud.e-infra.cz"
-     secretName: embedbase-ol-dyn-cloud-e-infra-cz
+       - "embedbase-dev.dyn.cloud.e-infra.cz"
+     secretName: embedbase-dev-dyn-cloud-e-infra-cz
   rules:
-  - host: embedbase-ol.dyn.cloud.e-infra.cz
+  - host: embedbase-dev.dyn.cloud.e-infra.cz
     http:
       paths:
         - pathType: Prefix

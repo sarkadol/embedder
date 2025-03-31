@@ -7,7 +7,7 @@ import requests
 from pathlib import Path
 from langchain.text_splitter import MarkdownTextSplitter
 
-chunksize = 1000
+chunksize = 500
 chunkoverlap = 100
 
 def process_meta(base_path, lang, current_dir=""):
@@ -50,7 +50,8 @@ def process_meta(base_path, lang, current_dir=""):
     return results
 
 def main():
-    base_dir = "rad"
+    #base_dir = "rad"
+    base_dir = "kube-docs/content/docs"
     all_files = []
     all_chunks = []
     
@@ -116,10 +117,11 @@ def main():
             })
 
         # 4. Upload to EMBEDURL
+        print("uploading to EMBEDURL...")
         embed_url = os.environ.get("EMBEDURL")
         if not embed_url:
             embed_url = "https://embedbase.dyn.cloud.e-infra.cz/v1/muni-documentation"
-
+        print(f"EMBEDURL: {embed_url}")
         chunk_count = len(all_chunks)
         response = requests.post(
             embed_url,
