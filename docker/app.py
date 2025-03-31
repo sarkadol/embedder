@@ -468,8 +468,15 @@ class Embedbase:
         def detect_lang(text):
             try:
                 lang = detect(text)
-                return "cz" if lang == "cs" else "en"
-            except:
+                if lang in ("cs", "sk"):
+                    return "cz"
+                elif lang == "en":
+                    return "en"
+                else:
+                    self.logger.warning(f"Unrecognized language code: {lang} — defaulting to 'en'")
+                    return "en"
+            except Exception as e:
+                self.logger.error(f"Language detection failed: {e}")
                 return "en"
 
         query_lang = detect_lang(query)
@@ -479,12 +486,10 @@ class Embedbase:
         similarities = []
         for match in query_response:
             metadata = match.metadata or {}
-            self.logger.info(f"[DEBUG] Match metadata: {match.metadata}")
             path = metadata.get("path", "")
             lang = "cz" if "/cz/" in path else "en"
 
             if lang != query_lang:
-                self.logger.info(f"Checking match path: {path} → detected lang: {lang}")
                 continue  # skip if not same language
 
             self.logger.info(f"Query found answer in document: {metadata}. Score: {match.score}")
@@ -494,7 +499,6 @@ class Embedbase:
                     "id": match.id,
                     "data": match.data,
                     "metadata": metadata,
-                    "TESTOVANI": "TESTOVANI",
                 }
             )
 
@@ -503,6 +507,7 @@ class Embedbase:
             content={
                 **self._base_return(dataset_id),
                 "query": query,
+                "query_lang": query_lang,
                 "similarities": similarities,
             },
         )
