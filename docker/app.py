@@ -479,10 +479,12 @@ class Embedbase:
         similarities = []
         for match in query_response:
             metadata = match.metadata or {}
+            self.logger.info(f"[DEBUG] Match metadata: {match.metadata}")
             path = metadata.get("path", "")
             lang = "cz" if path.endswith(".cz.mdx") else "en"
 
             if lang != query_lang:
+                self.logger.info(f"Checking match path: {path} → detected lang: {lang}")
                 continue  # skip if not same language
 
             self.logger.info(f"Query found answer in document: {metadata}. Score: {match.score}")
