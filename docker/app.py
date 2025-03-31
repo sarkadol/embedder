@@ -43,6 +43,7 @@ class Embedbase:
         self.fastapi_app = FastAPI(
             default_response_class=ORJSONResponse,
         )
+        print("========== testovani =========")
         self.logger = get_logger(settings)
 
     def _base_return(self, dataset_id: Optional[str] = None) -> dict:
@@ -437,9 +438,11 @@ class Embedbase:
                 },
             )
 
-        top_k = 5  # TODO might fail if index empty?
-        if request_body.top_k > 0:
-            top_k = request_body.top_k
+        #top_k = 5  # TODO might fail if index empty?
+        #if request_body.top_k > 0:
+        #    top_k = request_body.top_k
+        top_k = min(10, request_body.top_k) if request_body.top_k > 0 else 5
+
         query_embedding = (await self.embedder.embed(query))[0]
         embedding = json.dumps(query_embedding)
 
@@ -470,6 +473,7 @@ class Embedbase:
                     #"hash": match.hash,
                     #"embedding": match.embedding,
                     "metadata": match.metadata,
+		    "length": len(match.data) if match.data else 0, # changed this and the top_k
                 }
             )
         return JSONResponse(
