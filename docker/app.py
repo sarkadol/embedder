@@ -450,33 +450,52 @@ class Embedbase:
                 f"Query '{request_body.query}' created embedding. Embedding size: {len(embedding)}. Querying index."
         )
 
+        # Perform the semantic search
         query_response = await self.db.search(
             top_k=top_k,
             vector=query_embedding,
             dataset_ids=[dataset_id],
             user_id=user_id,
-            where=request_body.where,
+            where=request_body.where,  # will be ignored by DB, handled below
         )
 
         self.logger.info(
-                f"Query response size: {len(query_response)}."
+            f"Query response size: {len(query_response)}."
         )
 
+        # --- detect query language ---
+        from langdetect import detect
+        def detect_lang(text):
+            try:
+                lang = detect(text)
+                return "cz" if lang == "cs" else "en"
+            except:
+                return "en"
+
+        query_lang = detect_lang(query)
+        self.logger.info(f"Detected query language: {query_lang}")
+
+        # --- filter results by language based on path ending ---
         similarities = []
         for match in query_response:
-            self.logger.info(f"Query found answer in document: {match.metadata}. Score: {match.score}")
+            metadata = match.metadata or {}
+            path = metadata.get("path", "")
+            lang = "cz" if path.endswith(".cz.mdx") else "en"
+
+            if lang != query_lang:
+                continue  # skip if not same language
+
+            self.logger.info(f"Query found answer in document: {metadata}. Score: {match.score}")
             similarities.append(
                 {
                     "score": match.score,
                     "id": match.id,
                     "data": match.data,
-                    #"hash": match.hash,
-                    #"embedding": match.embedding,
-                    "metadata": match.metadata,
-		            "length": len(match.data) if match.data else 0, # changed this and the top_k
+                    "metadata": metadata,
                     "TESTOVANI": "TESTOVANI",
                 }
             )
+
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={
