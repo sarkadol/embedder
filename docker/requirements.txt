@@ -6,3 +6,4 @@ openai
 gunicorn
 pgvector 
 psycopg[binary]
+langdetect
