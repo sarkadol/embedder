@@ -283,11 +283,6 @@ where
             d["query_user_id"] = user_id
             q += ", %(query_user_id)s"
         if where:
-            raise NotImplementedError(
-                "where is not implemented in postgres db yet, if you need it, ping us on discord and we will ship instantly"
-            )
-
-            # raise if where is not a dict
             if not isinstance(where, dict):
                 raise ValueError("currently only dict is supported for where")
             metadata_field = list(where.keys())[0]
@@ -295,7 +290,7 @@ where
             d["metadata_field"] = metadata_field
             d["metadata_value"] = metadata_value
             q += ", %(metadata_field)s, %(metadata_value)s"
-        q += ")"
+
         try:
             results = self.conn.execute(q, d)
         except Exception as e:
@@ -400,15 +395,44 @@ where
         raise NotImplementedError
 
     async def where(
-        self,
-        dataset_id: Optional[str] = None,
-        user_id: Optional[str] = None,
-        where: Optional[Union[dict, List[dict]]] = None,
+            self,
+            dataset_id: Optional[str] = None,
+            user_id: Optional[str] = None,
+            where: Optional[Union[dict, List[dict]]] = None,
     ) -> List[WhereResponse]:
+        assert isinstance(where, dict), "Only dict filters are supported"
+        metadata_field = list(where.keys())[0]
+        metadata_value = where[metadata_field]
+
+        query = """
+            SELECT id, data, embedding, hash, metadata
+            FROM documents
+            WHERE metadata->>%s = %s
         """
-        :param dataset_id: dataset id
-        :param user_id: user id
-        :param where: where condition to filter results
-        :return: list of documents
-        """
-        raise NotImplementedError
+        params = [metadata_field, metadata_value]
+
+        if dataset_id:
+            query += " AND dataset_id = %s"
+            params.append(dataset_id)
+
+        if user_id:
+            query += " AND user_id = %s"
+            params.append(user_id)
+
+        try:
+            results = self.conn.execute(query, params)
+        except Exception as e:
+            self.logger.error(f"Error in where(): {e}")
+            return []
+
+        return [
+            WhereResponse(
+                id=row[0],
+                data=row[1],
+                embedding=row[2].tolist(),
+                hash=row[3],
+                metadata=row[4],
+            )
+            for row in results
+        ]
+
