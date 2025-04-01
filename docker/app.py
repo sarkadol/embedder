@@ -450,7 +450,7 @@ class Embedbase:
         )
 
         # NEW: read chunk_context, default 0
-        chunk_context = getattr(request_body, "chunk_context", 0)
+        chunk_context = request_body.chunk_context or 0
         self.logger.info(
             f"Recieved chunk_context={chunk_context}"
         )
