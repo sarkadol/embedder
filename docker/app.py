@@ -437,6 +437,11 @@ class Embedbase:
                     + ", please see https://docs.embedbase.xyz/query-is-too-long"
                 },
             )
+            # Read raw JSON to get custom fields not defined in SearchRequest
+        body_dict = await request.json()
+        chunk_context = body_dict.get("chunk_context", 0)
+
+        self.logger.info(f"Received chunk_context={chunk_context}")
 
         #top_k = 5  # TODO might fail if index empty?
         #if request_body.top_k > 0:
@@ -449,11 +454,6 @@ class Embedbase:
                 f"Query '{request_body.query}' created embedding. Embedding size: {len(embedding)}. Querying index."
         )
 
-        # NEW: read chunk_context, default 0
-        chunk_context = request_body.chunk_context or 0
-        self.logger.info(
-            f"Recieved chunk_context={chunk_context}"
-        )
 
         # Perform the semantic search
         query_response = await self.db.search(
