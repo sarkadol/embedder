@@ -445,9 +445,14 @@ class Embedbase:
 
         query_embedding = (await self.embedder.embed(query))[0]
         embedding = json.dumps(query_embedding)
-
         self.logger.info(
                 f"Query '{request_body.query}' created embedding. Embedding size: {len(embedding)}. Querying index."
+        )
+
+        # NEW: read chunk_context, default 0
+        chunk_context = getattr(request_body, "chunk_context", 0)
+        self.logger.info(
+            f"Recieved chunk_context={chunk_context}"
         )
 
         # Perform the semantic search
