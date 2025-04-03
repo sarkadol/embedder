@@ -85,8 +85,8 @@ begin
     documents.embedding,
     documents.metadata
   from documents
-  where 1 - (documents.embedding <=> query_embedding) > similarity_threshold
-    and documents.dataset_id = any(query_dataset_ids)
+--   where 1 - (documents.embedding <=> query_embedding) > similarity_threshold
+  where documents.dataset_id = any(query_dataset_ids)
     and (query_user_id is null or query_user_id = documents.user_id)
 --     and (documents.metadata->>metadata_field = metadata_value)
 --     and (metadata_field is null or documents.metadata->>metadata_field = metadata_value) -- filter by metadata
