@@ -295,7 +295,13 @@ where
         self.logger.info(f"Query: {q}")
 
         try:
-            results = self.conn.execute(q, d)
+            #results = self.conn.execute(q, d)
+
+            with self.conn.cursor() as cur:
+                self.logger.info(f"Interpolated SQL:\n{cur.mogrify(q, d).decode()}")
+                cur.execute(q, d)
+                results = cur.fetchall()
+
         except Exception as e:
             self.logger.info(f"Got an exception: {e}. Trying to reconnect to db.")
             self.conn = psycopg.connect(self.conn_str, dbname="embedbase")

@@ -482,7 +482,9 @@ class Embedbase:
             vector=query_embedding,
             dataset_ids=[dataset_id],
             user_id=user_id,
-            where=None,  # <--- force no filtering
+            #where=None,  # <--- force no filtering
+            where=where,  # will be ignored by DB by now, handled below
+
         )
 
         self.logger.info(
