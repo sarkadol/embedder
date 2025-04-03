@@ -286,6 +286,7 @@ where
             d["query_user_id"] = user_id
             q += ", %(query_user_id)s"
         if where:
+            self.logger.info("'Where' clause detected and added to query")
             if not isinstance(where, dict):
                 raise ValueError("Currently only dict is supported for 'where'")
             metadata_field = list(where.keys())[0] # where = {"lang": "en"} so metadata_field = "lang"
@@ -294,11 +295,11 @@ where
             d["metadata_value"] = metadata_value
             q += ", %(metadata_field)s, %(metadata_value)s"
             #self.logger.info(f"Where filtering added to query: {metadata_field} = {metadata_value}")
+        else:
+            self.logger.info("No 'where' clause detected")
 
         q += ")"
         self.logger.info(f"Query: {q}")
-        self.logger.info(f"Running vector search with filter:")
-        self.logger.info(json.dumps(d, indent=2))
 
         try:
             results = self.conn.execute(q, d)
