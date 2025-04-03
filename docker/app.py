@@ -529,10 +529,12 @@ class Embedbase:
 #----------------
         similarities = []
         for match in query_response:
-            self.logger.info(f"Query found answer in document: {match.metadata}. Score: {match.score}")
+            #self.logger.info(f"Query found answer in document: {match.metadata}. Score: {match.score}")
+            self.logger.info(f"Query found answer in document: {match.metadata}")
+
             similarities.append(
                 {
-                    "score": match.score,
+                    #"score": match.score,
                     "id": match.id,
                     "data": match.data,
                     # "hash": match.hash,
