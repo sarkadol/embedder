@@ -295,6 +295,8 @@ where
 
         q += ")"
         self.logger.info(f"Query: {q}")
+        self.logger.info(f"Running vector search with filter:")
+        self.logger.info(json.dumps(d, indent=2))
 
         try:
             results = self.conn.execute(q, d)
