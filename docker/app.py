@@ -454,20 +454,6 @@ class Embedbase:
                 f"Query '{request_body.query}' created embedding. Embedding size: {len(embedding)}. Querying index."
         )
 
-
-        # Perform the semantic search
-        query_response = await self.db.search(
-            top_k=top_k,
-            vector=query_embedding,
-            dataset_ids=[dataset_id],
-            user_id=user_id,
-            where=request_body.where,  # will be ignored by DB by now, handled below
-        )
-
-        self.logger.info(
-            f"Query response size: {len(query_response)}."
-        )
-
         # --- detect query language ---
         from langdetect import detect
         def detect_lang(text):
@@ -485,8 +471,25 @@ class Embedbase:
                 return "en"
 
         query_lang = detect_lang(query)
-        self.logger.info(f"Detected query language: {query_lang}")
+        where = {"lang": query_lang}
 
+        self.logger.info(f"Detected query language: {query_lang}")
+        self.logger.info(f"where: {where}")
+
+        # Perform the semantic search
+        query_response = await self.db.search(
+            top_k=top_k,
+            vector=query_embedding,
+            dataset_ids=[dataset_id],
+            user_id=user_id,
+            where=where,  # will be ignored by DB by now, handled below
+        )
+
+        self.logger.info(
+            f"Query response size: {len(query_response)}."
+        )
+
+#---------------------------------
         # --- separate results by language ---
         matching_lang = []
         other_lang = []
@@ -515,7 +518,7 @@ class Embedbase:
 
         self.logger.info(
             f"Returning {len(similarities)} results (lang: {query_lang}, fallback used: {len(similarities) > len(matching_lang)})")
-
+#------------------
         return JSONResponse(
             status_code=status.HTTP_200_OK,
             content={
