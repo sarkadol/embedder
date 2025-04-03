@@ -291,7 +291,7 @@ where
             d["metadata_field"] = metadata_field
             d["metadata_value"] = metadata_value
             q += ", %(metadata_field)s, %(metadata_value)s"
-            self.logger.info(f"Where filtering added to query: {metadata_field} = {metadata_value}")
+            #self.logger.info(f"Where filtering added to query: {metadata_field} = {metadata_value}")
 
         q += ")"
         self.logger.info(f"Query: {q}")
@@ -318,6 +318,16 @@ where
             original_hash = row[3]
             original_embedding = row[4].tolist()
             original_metadata = row[5]
+
+            #--------------------------
+            self.logger.info("==== New Row ====")
+            self.logger.info(f"ID: {original_id}")
+            self.logger.info(f"Score: {original_score}")
+            self.logger.info(f"Metadata: {original_metadata}")
+            self.logger.info(
+                f"Chunk Path: {original_metadata.get('path') if isinstance(original_metadata, dict) else 'N/A'}")
+            #--------------------------
+
 
             # Extract path from metadata
             path = None
