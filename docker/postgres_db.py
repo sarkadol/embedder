@@ -278,6 +278,7 @@ where
             "match_count": top_k,
             "query_dataset_ids": dataset_ids,
         }
+        # query for searching in embeddings - VECTOR SIMILARITY SEARCH
         q = "select * from match_documents(%(query_embedding)s, %(similarity_threshold)s, %(match_count)s, %(query_dataset_ids)s"
         if user_id:
             d["query_user_id"] = user_id
@@ -295,13 +296,7 @@ where
         self.logger.info(f"Query: {q}")
 
         try:
-            #results = self.conn.execute(q, d)
-
-            with self.conn.cursor() as cur:
-                self.logger.info(f"Interpolated SQL:\n{cur.mogrify(q, d).decode()}")
-                cur.execute(q, d)
-                results = cur.fetchall()
-
+            results = self.conn.execute(q, d)
         except Exception as e:
             self.logger.info(f"Got an exception: {e}. Trying to reconnect to db.")
             self.conn = psycopg.connect(self.conn_str, dbname="embedbase")
@@ -334,6 +329,8 @@ where
             concatenated_data = original_data
             if path and (top_k is None or top_k > 1):
                 # Query to fetch all documents with the same path, same dataset and user
+                # If one chunk from a document is retrieved, the system returns the entire document
+                # and not just the matching chunk(s).
                 query = """
                     SELECT data
                     FROM documents
