@@ -518,7 +518,20 @@ class Embedbase:
         #
         # self.logger.info(
         #     f"Returning {len(similarities)} results (lang: {query_lang}, fallback used: {len(similarities) > len(matching_lang)})")
-
+#----------------
+        similarities = []
+        for match in query_response:
+            self.logger.info(f"Query found answer in document: {match.metadata}. Score: {match.score}")
+            similarities.append(
+                {
+                    "score": match.score,
+                    "id": match.id,
+                    "data": match.data,
+                    # "hash": match.hash,
+                    # "embedding": match.embedding,
+                    "metadata": match.metadata,
+                }
+            )
 #------------------
         return JSONResponse(
             status_code=status.HTTP_200_OK,
