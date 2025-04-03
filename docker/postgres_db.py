@@ -85,13 +85,11 @@ begin
     documents.embedding,
     documents.metadata
   from documents
---   where 1 - (documents.embedding <=> query_embedding) > similarity_threshold
---     and documents.dataset_id = any(query_dataset_ids)
---     and (query_user_id is null or query_user_id = documents.user_id)
---     and (metadata_field is null or documents.metadata->>metadata_field = metadata_value) -- filter by metadata
---   order by documents.embedding <=> query_embedding;
-WHERE documents.metadata->>'lang' = 'cz';
-
+  where 1 - (documents.embedding <=> query_embedding) > similarity_threshold
+    and documents.dataset_id = any(query_dataset_ids)
+    and (query_user_id is null or query_user_id = documents.user_id)
+    and (metadata_field is null or documents.metadata->>metadata_field = metadata_value) -- filter by metadata
+  order by documents.embedding <=> query_embedding;
 end;
 $$;"""
             )

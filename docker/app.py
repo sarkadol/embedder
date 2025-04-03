@@ -477,16 +477,22 @@ class Embedbase:
         self.logger.info(f"where: {where}")
 
         # Perform the semantic search
-        query_response = await self.db.search(
-            top_k=top_k,
-            vector=query_embedding,
+        # query_response = await self.db.search(
+        #     top_k=top_k,
+        #     vector=query_embedding,
+        #     dataset_ids=[dataset_id],
+        #     user_id=user_id,
+        #     where=None,  # <--- force no filtering
+        #     #where=where,  # processed in postgres_db.py
+        #
+        # )
+        # ----------------
+        query_response = await self.db.where(
             dataset_ids=[dataset_id],
             user_id=user_id,
-            where=None,  # <--- force no filtering
-            #where=where,  # processed in postgres_db.py
-
+            where=where,
         )
-
+        #----------------
         self.logger.info(
             f"Query response size: {len(query_response)}."
         )
