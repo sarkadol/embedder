@@ -291,6 +291,8 @@ where
             d["metadata_value"] = metadata_value
             q += ", %(metadata_field)s, %(metadata_value)s"
 
+        self.logger.info(f"Query: {q}")
+
         try:
             results = self.conn.execute(q, d)
         except Exception as e:
