@@ -286,11 +286,12 @@ where
         if where:
             if not isinstance(where, dict):
                 raise ValueError("Currently only dict is supported for 'where'")
-            metadata_field = list(where.keys())[0]
-            metadata_value = where[metadata_field]
+            metadata_field = list(where.keys())[0] # where = {"lang": "en"} so metadata_field = "lang"
+            metadata_value = where[metadata_field] # metadata_value = "en"
             d["metadata_field"] = metadata_field
             d["metadata_value"] = metadata_value
             q += ", %(metadata_field)s, %(metadata_value)s"
+            self.logger.info(f"Where filtering added to query: {metadata_field} = {metadata_value}")
 
         q += ")"
         self.logger.info(f"Query: {q}")
