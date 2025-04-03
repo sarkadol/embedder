@@ -290,8 +290,8 @@ where
             d["metadata_field"] = metadata_field
             d["metadata_value"] = metadata_value
             q += ", %(metadata_field)s, %(metadata_value)s"
-        q += ")"
 
+        q += ")"
         self.logger.info(f"Query: {q}")
 
         try:

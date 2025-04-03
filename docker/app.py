@@ -490,34 +490,35 @@ class Embedbase:
         )
 
 #---------------------------------
-        # --- separate results by language ---
-        matching_lang = []
-        other_lang = []
+        # # --- separate results by language ---
+        # matching_lang = []
+        # other_lang = []
+        #
+        # for match in query_response:
+        #     metadata = match.metadata or {}
+        #     path = metadata.get("path", "")
+        #     lang = "cz" if "/cz/" in path else "en"
+        #
+        #     entry = {
+        #         "score": match.score,
+        #         "id": match.id,
+        #         "data": match.data,
+        #         "metadata": metadata,
+        #     }
+        #
+        #     if lang == query_lang:
+        #         matching_lang.append(entry)
+        #     else:
+        #         other_lang.append(entry)
+        #
+        # # Combine top_k from matching language, then fill with other_lang if needed
+        # similarities = matching_lang[:top_k]
+        # if len(similarities) < top_k:
+        #     similarities.extend(other_lang[:top_k - len(similarities)])
+        #
+        # self.logger.info(
+        #     f"Returning {len(similarities)} results (lang: {query_lang}, fallback used: {len(similarities) > len(matching_lang)})")
 
-        for match in query_response:
-            metadata = match.metadata or {}
-            path = metadata.get("path", "")
-            lang = "cz" if "/cz/" in path else "en"
-
-            entry = {
-                "score": match.score,
-                "id": match.id,
-                "data": match.data,
-                "metadata": metadata,
-            }
-
-            if lang == query_lang:
-                matching_lang.append(entry)
-            else:
-                other_lang.append(entry)
-
-        # Combine top_k from matching language, then fill with other_lang if needed
-        similarities = matching_lang[:top_k]
-        if len(similarities) < top_k:
-            similarities.extend(other_lang[:top_k - len(similarities)])
-
-        self.logger.info(
-            f"Returning {len(similarities)} results (lang: {query_lang}, fallback used: {len(similarities) > len(matching_lang)})")
 #------------------
         return JSONResponse(
             status_code=status.HTTP_200_OK,
