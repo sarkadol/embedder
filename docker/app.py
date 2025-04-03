@@ -488,7 +488,7 @@ class Embedbase:
         # )
         # ----------------
         query_response = await self.db.where(
-            dataset_ids=[dataset_id],
+            dataset_id=dataset_id,
             user_id=user_id,
             where=where,
         )
