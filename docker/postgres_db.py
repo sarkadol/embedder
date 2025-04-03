@@ -286,6 +286,10 @@ where
         if user_id:
             d["query_user_id"] = user_id
             q += ", %(query_user_id)s"
+        else:
+            # Important! We still must keep argument position consistent.
+            # So we pass NULL for user_id.
+            q += ", NULL"
         if where:
             self.logger.info("'Where' clause detected and added to query")
             if not isinstance(where, dict):
@@ -301,6 +305,7 @@ where
 
         q += ")"
         self.logger.info(f"Query: {q}")
+        self.logger.info(f"Params: {d}")
 
         try:
             results = self.conn.execute(q, d)
