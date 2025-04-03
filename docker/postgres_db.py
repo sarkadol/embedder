@@ -302,6 +302,7 @@ where
             #self.logger.info(f"Where filtering added to query: {metadata_field} = {metadata_value}")
         else:
             self.logger.info("No 'where' clause detected")
+            q += ", NULL,NULL"
 
         q += ")"
         self.logger.info(f"Query: {q}")
