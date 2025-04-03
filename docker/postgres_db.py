@@ -88,8 +88,8 @@ begin
   where 1 - (documents.embedding <=> query_embedding) > similarity_threshold
     and documents.dataset_id = any(query_dataset_ids)
     and (query_user_id is null or query_user_id = documents.user_id)
---     and (metadata_field is null or documents.metadata->>metadata_field = metadata_value) -- filter by metadata
-    and documents.metadata->>'lang' = 'cz'
+    and (metadata_field is null or documents.metadata->>metadata_field = metadata_value) -- filter by metadata
+--     and documents.metadata->>'lang' = 'cz'
   order by documents.embedding <=> query_embedding;
 end;
 $$;"""
