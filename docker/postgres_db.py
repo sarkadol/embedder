@@ -284,7 +284,7 @@ where
             q += ", %(query_user_id)s"
         if where:
             if not isinstance(where, dict):
-                raise ValueError("currently only dict is supported for where")
+                raise ValueError("Currently only dict is supported for 'where'")
             metadata_field = list(where.keys())[0]
             metadata_value = where[metadata_field]
             d["metadata_field"] = metadata_field
