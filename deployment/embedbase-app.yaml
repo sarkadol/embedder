@@ -39,7 +39,7 @@ spec:
               key: OPENAI_ORGANISATION
               name: openai
         - name: DIMENSIONS
-          value: "4096"
+          value: "768"
         - name: OPENAI_MODEL
           value: 'intfloat/multilingual-e5-large-instruct'
         - name: OPENAI_URL

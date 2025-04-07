@@ -20,7 +20,7 @@ from pgvector.psycopg import register_vector
 
 class Postgres(VectorDatabase):
     def __init__(
-        self, conn_str="postgresql://postgres:localdb@0.0.0.0/embedbase", **kwargs
+        self, conn_str="postgresql://postgres:localdb@0.0.0.0/embedbase", dimensions = 4096,**kwargs
     ):
         """
         Implements a vector database using postgres
@@ -29,6 +29,8 @@ class Postgres(VectorDatabase):
         super().__init__(**kwargs)
         self.logger.info("Starting DB")
         self.conn_str = conn_str
+        self._dimensions = dimensions
+
         try:
             self.conn = psycopg.connect(conn_str, dbname="embedbase")
             self.conn.autocommit = True
