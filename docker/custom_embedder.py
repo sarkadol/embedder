@@ -3,6 +3,8 @@ import requests
 from typing import List, Union
 from embedbase.embedding.base import Embedder
 from embedbase.logging_utils import get_logger
+import json
+
 
 
 class CustomEmbedder(Embedder):
