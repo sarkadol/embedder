@@ -30,6 +30,7 @@ class Postgres(VectorDatabase):
         self.logger.info("Starting DB")
         self.conn_str = conn_str
         self._dimensions = dimensions
+        self.logger.info(f"dimensions {dimensions}")
 
         try:
             self.conn = psycopg.connect(conn_str, dbname="embedbase")
