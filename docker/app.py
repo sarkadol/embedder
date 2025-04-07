@@ -29,6 +29,7 @@ from embedbase.models import (
 from embedbase.settings import Settings
 from embedbase.utils import embedbase_ascii, get_user_id
 
+
 UPLOAD_BATCH_SIZE = int(os.environ.get("UPLOAD_BATCH_SIZE", "100"))
 
 
@@ -43,7 +44,6 @@ class Embedbase:
         self.fastapi_app = FastAPI(
             default_response_class=ORJSONResponse,
         )
-        print("========== testovani =========")
         self.logger = get_logger(settings)
 
     def _base_return(self, dataset_id: Optional[str] = None) -> dict:
