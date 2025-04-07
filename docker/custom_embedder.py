@@ -32,11 +32,18 @@ class CustomEmbedder(Embedder):
 
         for item in data:
             try:
+                payload = {
+                    "model": "gritlm-7b:latest",
+                    "input": item,
+                    "encoding_format": "float"
+                }
+                print("Sending payload:", json.dumps(payload, indent=2))
+
                 response = requests.post(
                     self.api_url,
-                    json={"input": item},
+                    json=payload,
                     headers={"Content-Type": "application/json"},
-                    verify=False  # remove if your cert is valid
+                    verify=False
                 )
                 response.raise_for_status()
                 embedding = response.json()["data"][0]["embedding"]
@@ -46,3 +53,4 @@ class CustomEmbedder(Embedder):
                 raise
 
         return embeddings
+
