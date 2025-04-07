@@ -16,7 +16,7 @@ class CustomEmbedder(Embedder):
         self.logger = get_logger()
         super().__init__()
         self.api_url = api_url
-        self.embedding_dim = int(os.getenv("DIMENSIONS", "1024"))  # update if needed
+        self.embedding_dim = int(os.getenv("DIMENSIONS", "4096"))  # update if needed
 
     @property
     def dimensions(self) -> int:
