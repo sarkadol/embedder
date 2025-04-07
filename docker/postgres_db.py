@@ -274,6 +274,7 @@ where
         dataset_ids: List[str],
         user_id: Optional[str] = None,
         where=None,
+        chunk_context: int = 0,
     ):
         d = {
             "query_embedding": str(vector),
@@ -299,14 +300,15 @@ where
             d["metadata_field"] = metadata_field
             d["metadata_value"] = metadata_value
             q += ", %(metadata_field)s, %(metadata_value)s"
-            #self.logger.info(f"Where filtering added to query: {metadata_field} = {metadata_value}")
         else:
             self.logger.info("No 'where' clause detected")
             q += ", NULL,NULL"
 
         q += ")"
         self.logger.info(f"Query: {q}")
-        self.logger.info(f"Params: {d}")
+        #self.logger.info(f"Params: {d}")
+        self.logger.info(f"chunk_context: {chunk_context}")
+
 
         try:
             results = self.conn.execute(q, d)
