@@ -7,4 +7,3 @@ gunicorn
 pgvector 
 psycopg[binary]
 langdetect
-more-itertools==10.6.0
