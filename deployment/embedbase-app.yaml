@@ -18,7 +18,7 @@ spec:
           type: RuntimeDefault
       containers:
       - name: embedbase-api
-        image: cerit.io/cerit/embedbase:dev
+        image: cerit.io/cerit/embedbase:dev1  # instead of :dev
         imagePullPolicy: Always
         env:
         - name: PORT
