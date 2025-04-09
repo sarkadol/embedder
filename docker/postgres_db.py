@@ -282,7 +282,8 @@ where
         # -------------NEW FOR 4096 dim vector without indexes------------------
         # no indexes are used.
         q = """
-            SELECT id, data, embedding <=> %(query_embedding)s AS score, hash, embedding, metadata
+            SELECT id, data, embedding <=> %(query_embedding)s::vector
+            AS score, hash, embedding, metadata
             FROM documents
             WHERE dataset_id = ANY(%(query_dataset_ids)s)
         """
@@ -294,14 +295,14 @@ where
             metadata_value = where[metadata_field]
             q += f" AND metadata->>'{metadata_field}' = %({metadata_field})s"
             d = {
-                "query_embedding": vector,
+                "query_embedding": f"[{', '.join(map(str, vector))}]",  # string in pgvector format
                 "query_dataset_ids": dataset_ids,
                 metadata_field: metadata_value,
             }
         else:
             self.logger.info("No 'where' clause detected")
             d = {
-                "query_embedding": vector,
+                "query_embedding": f"[{', '.join(map(str, vector))}]",  # string in pgvector format
                 "query_dataset_ids": dataset_ids,
             }
 
