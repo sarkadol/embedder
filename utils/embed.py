@@ -121,16 +121,21 @@ def main():
         #embed_url = os.environ.get("EMBEDURL")
 
         # HARDCODED URL FOR TESTING
-        embed_url = "https://embedbase-dev.dyn.cloud.e-infra.cz/v1/test/search"
+        embed_url = "https://embedbase-dev.dyn.cloud.e-infra.cz/v1/test"
         if not embed_url:
             embed_url = "https://embedbase.dyn.cloud.e-infra.cz/v1/muni-documentation"
         print(f"EMBEDURL: {embed_url}")
         chunk_count = len(all_chunks)
-        response = requests.post(
-            embed_url,
-            json={"documents": all_chunks},
-            headers={"Content-Type": "application/json"}
-        )
+        # response = requests.post(
+        #     embed_url,
+        #     json={"documents": all_chunks},
+        #     headers={"Content-Type": "application/json"}
+        # )
+        from more_itertools import chunked  # pip install more-itertools
+
+        for chunk_batch in chunked(all_chunks, 100):
+            response = requests.post(embed_url, json={"documents": chunk_batch}, ...)
+            response.raise_for_status()
         response.raise_for_status()
         print(f"Uploaded {chunk_count} chunks")
 
