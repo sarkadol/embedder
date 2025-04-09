@@ -134,9 +134,12 @@ def main():
         from more_itertools import chunked  # pip install more-itertools
 
         for chunk_batch in chunked(all_chunks, 100):
-            response = requests.post(embed_url, json={"documents": chunk_batch}, ...)
+            response = requests.post(
+                    embed_url,
+                    json={"documents": all_chunks},
+                    headers={"Content-Type": "application/json"}
+                )
             response.raise_for_status()
-        response.raise_for_status()
         print(f"Uploaded {chunk_count} chunks")
 
 if __name__ == "__main__":
