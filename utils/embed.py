@@ -7,8 +7,10 @@ import requests
 from pathlib import Path
 from langchain.text_splitter import MarkdownTextSplitter
 
-chunksize = 500
-chunkoverlap = 100
+# chunksize = 500
+# chunkoverlap = 100
+chunksize = 1000
+chunkoverlap = 200
 
 def process_meta(base_path, lang, current_dir=""):
     # Determine the correct meta filename based on language
