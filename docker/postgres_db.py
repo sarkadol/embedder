@@ -48,13 +48,14 @@ create table documents (
     created_date TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );"""
             )
-            self.conn.execute(
-                """
-create index on documents
-using ivfflat (embedding vector_cosine_ops)
-with (lists = 100);
-"""
-            )
+#             self.conn.execute(
+#                 """
+# create index on documents
+# using ivfflat (embedding vector_cosine_ops)
+# with (lists = 100);
+# """
+# # psycopg.errors.ProgramLimitExceeded: column cannot have more than 2000 dimensions for ivfflat index - when I tried the 4096.
+#             )
             self.conn.execute(
                 f"""
 create or replace function match_documents (
