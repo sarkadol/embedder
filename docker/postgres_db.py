@@ -278,38 +278,76 @@ where
         where=None,
         chunk_context: int = 0,
     ):
-        d = {
-            "query_embedding": str(vector),
-            "similarity_threshold": 0.0,  # TODO: make this configurable
-            "match_count": top_k,
-            "query_dataset_ids": dataset_ids,
-        }
-        # query for searching in embeddings - VECTOR SIMILARITY SEARCH
-        q = "select * from match_documents(%(query_embedding)s, %(similarity_threshold)s, %(match_count)s, %(query_dataset_ids)s"
-        if user_id:
-            d["query_user_id"] = user_id
-            q += ", %(query_user_id)s"
-        else:
-            # Important! We still must keep argument position consistent.
-            # So we pass NULL for user_id.
-            q += ", NULL"
+        #
+        # -------------NEW FOR 4096 dim vector without indexes------------------
+        # no indexes are used.
+        q = """
+            SELECT id, data, embedding <=> %(query_embedding)s AS score, hash, embedding, metadata
+            FROM documents
+            WHERE dataset_id = ANY(%(query_dataset_ids)s)
+        """
         if where:
             self.logger.info("'Where' clause detected and added to query")
             if not isinstance(where, dict):
                 raise ValueError("Currently only dict is supported for 'where'")
-            metadata_field = list(where.keys())[0] # where = {"lang": "en"} so metadata_field = "lang"
-            metadata_value = where[metadata_field] # metadata_value = "en"
-            d["metadata_field"] = metadata_field
-            d["metadata_value"] = metadata_value
-            q += ", %(metadata_field)s, %(metadata_value)s"
+            metadata_field = list(where.keys())[0]
+            metadata_value = where[metadata_field]
+            q += f" AND metadata->>'{metadata_field}' = %({metadata_field})s"
+            d = {
+                "query_embedding": vector,
+                "query_dataset_ids": dataset_ids,
+                metadata_field: metadata_value,
+            }
         else:
             self.logger.info("No 'where' clause detected")
-            q += ", NULL,NULL"
+            d = {
+                "query_embedding": vector,
+                "query_dataset_ids": dataset_ids,
+            }
 
-        q += ")"
+        q += """
+            ORDER BY embedding <=> %(query_embedding)s
+            LIMIT %(top_k)s;
+        """
+        d["top_k"] = top_k or 5
+
+        # -------------------------------
+
+        # --------------OLD match_documents FUNCTION ------------------
+        # d = {
+        #     "query_embedding": str(vector),
+        #     "similarity_threshold": 0.0,  # TODO: make this configurable
+        #     "match_count": top_k,
+        #     "query_dataset_ids": dataset_ids,
+        # }
+        # query for searching in embeddings - VECTOR SIMILARITY SEARCH
+        # q = "select * from match_documents(%(query_embedding)s, %(similarity_threshold)s, %(match_count)s, %(query_dataset_ids)s"
+        # if user_id:
+        #     d["query_user_id"] = user_id
+        #     q += ", %(query_user_id)s"
+        # else:
+        #     # Important! We still must keep argument position consistent.
+        #     # So we pass NULL for user_id.
+        #     q += ", NULL"
+        # if where:
+        #     self.logger.info("'Where' clause detected and added to query")
+        #     if not isinstance(where, dict):
+        #         raise ValueError("Currently only dict is supported for 'where'")
+        #     metadata_field = list(where.keys())[0] # where = {"lang": "en"} so metadata_field = "lang"
+        #     metadata_value = where[metadata_field] # metadata_value = "en"
+        #     d["metadata_field"] = metadata_field
+        #     d["metadata_value"] = metadata_value
+        #     q += ", %(metadata_field)s, %(metadata_value)s"
+        # else:
+        #     self.logger.info("No 'where' clause detected")
+        #     q += ", NULL,NULL"
+        #
+        # q += ")"
+        # -------------------------------
         self.logger.info(f"Query: {q}")
-        #self.logger.info(f"Params: {d}")
+        # self.logger.info(f"Params: {d}")
         self.logger.info(f"chunk_context: {chunk_context}")
+
 
 
         try:
