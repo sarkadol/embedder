@@ -128,20 +128,11 @@ def main():
             embed_url = "https://embedbase.dyn.cloud.e-infra.cz/v1/muni-documentation"
         print(f"EMBEDURL: {embed_url}")
         chunk_count = len(all_chunks)
-        batch_size = 500  # Upload 100 chunks per request
-
-        for i in range(0, len(all_chunks), batch_size):
-            batch = all_chunks[i:i + batch_size]
-            response = requests.post(
-                embed_url,
-                json={"documents": batch},
-                headers={"Content-Type": "application/json"}
-            )
-            if response.status_code == 200:
-                print(f"Batch {i}-{i + len(batch)} uploaded successfully.")
-            else:
-                print(f"Batch {i}-{i + len(batch)} FAILED: {response.status_code}")
-                print(response.text)
+        response = requests.post(
+            embed_url,
+            json={"documents": all_chunks},
+            headers={"Content-Type": "application/json"}
+        )
         print(f"Uploaded {chunk_count} chunks")
 
 if __name__ == "__main__":
