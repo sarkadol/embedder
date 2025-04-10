@@ -282,11 +282,12 @@ where
         # -------------NEW FOR 4096 dim vector without indexes------------------
         # no indexes are used. Function Match_documents not used
         q = """
-            SELECT id, data, embedding <=> %(query_embedding)s::vector
+            SELECT id, data, (1-(embedding <=> %(query_embedding)s::vector)) as similarity
             AS score, hash, embedding, metadata
             FROM documents
             WHERE dataset_id = ANY(%(query_dataset_ids)s)
         """
+
         if where:
             self.logger.info("'Where' clause detected and added to query")
             if not isinstance(where, dict):
@@ -305,7 +306,7 @@ where
                 "query_embedding": f"[{', '.join(map(str, vector))}]",  # string in pgvector format
                 "query_dataset_ids": dataset_ids,
             }
-
+        # ascending distance = from highest to lowest
         q += """
             ORDER BY (embedding <=> %(query_embedding)s::vector) ASC
             LIMIT %(top_k)s;
