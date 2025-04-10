@@ -20,7 +20,7 @@ def process_meta(base_path, lang, current_dir=""):
     if not os.path.exists(meta_path):
         print("meta not exists")
         return []
-    
+
     try:
         with open(meta_path, "r") as f:
             data = json.load(f)
@@ -32,23 +32,23 @@ def process_meta(base_path, lang, current_dir=""):
     for item in data.get("pages", []):
         # Construct full path for current item
         full_item_path = os.path.join(base_path, current_dir, item)
-        
+
         # Check for file existence
         if lang == "en":
             file_candidate = f"{full_item_path}.mdx"
         else:
             file_candidate = f"{full_item_path}.cz.mdx"
-        
+
         if os.path.isfile(file_candidate):
             results.append(os.path.relpath(file_candidate, base_path).replace("\\", "/"))
             continue
-        
+
         # Handle directory case
         dir_meta_path = os.path.join(full_item_path, "meta.cz.json" if lang == "cz" else "meta.json")
         if os.path.isdir(full_item_path) and os.path.exists(dir_meta_path):
             nested_dir = os.path.join(current_dir, item) if current_dir else item
             results.extend(process_meta(base_path, lang, nested_dir))
-    
+
     return results
 
 def main():
@@ -56,7 +56,7 @@ def main():
     base_dir = "kube-docs/content/docs"
     all_files = []
     all_chunks = []
-    
+
     for meta_path in glob.glob(os.path.join(base_dir, "meta*.json")):
         # Determine language from filename
         filename = os.path.basename(meta_path)
@@ -71,7 +71,7 @@ def main():
     unique_files = sorted(set(all_files))
 
     print(f"Unique files: {unique_files}")
-    
+
     # Print results
     for file_path in unique_files:
         path_obj = Path(os.path.join(base_dir,file_path))
@@ -128,11 +128,20 @@ def main():
             embed_url = "https://embedbase.dyn.cloud.e-infra.cz/v1/muni-documentation"
         print(f"EMBEDURL: {embed_url}")
         chunk_count = len(all_chunks)
-        response = requests.post(
-            embed_url,
-            json={"documents": all_chunks},
-            headers={"Content-Type": "application/json"}
-        )
+        batch_size = 500  # Upload 100 chunks per request
+
+        for i in range(0, len(all_chunks), batch_size):
+            batch = all_chunks[i:i + batch_size]
+            response = requests.post(
+                embed_url,
+                json={"documents": batch},
+                headers={"Content-Type": "application/json"}
+            )
+            if response.status_code == 200:
+                print(f"Batch {i}-{i + len(batch)} uploaded successfully.")
+            else:
+                print(f"Batch {i}-{i + len(batch)} FAILED: {response.status_code}")
+                print(response.text)
         print(f"Uploaded {chunk_count} chunks")
 
 if __name__ == "__main__":
