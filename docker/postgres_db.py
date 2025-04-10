@@ -280,7 +280,7 @@ where
     ):
         #
         # -------------NEW FOR 4096 dim vector without indexes------------------
-        # no indexes are used.
+        # no indexes are used. Function Match_documents not used
         q = """
             SELECT id, data, embedding <=> %(query_embedding)s::vector
             AS score, hash, embedding, metadata
@@ -307,7 +307,7 @@ where
             }
 
         q += """
-            ORDER BY embedding <=> %(query_embedding)s
+            ORDER BY (1-(embedding <=> %(query_embedding)s)) DESC
             LIMIT %(top_k)s;
         """
         d["top_k"] = top_k or 5
