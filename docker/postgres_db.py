@@ -282,7 +282,7 @@ where
         # -------------NEW FOR 4096 dim vector without indexes------------------
         # no indexes are used. Function Match_documents not used
         q = """
-            SELECT id, data, (1-(embedding <=> %(query_embedding)s::vector)) as similarity
+            SELECT id, data, (1-(embedding <=> %(query_embedding)s::vector))
             AS score, hash, embedding, metadata
             FROM documents
             WHERE dataset_id = ANY(%(query_dataset_ids)s)
