@@ -307,7 +307,7 @@ where
             }
 
         q += """
-            ORDER BY (1-(embedding <=> %(query_embedding)s::vector)) DESC
+            ORDER BY (embedding <=> %(query_embedding)s::vector) ASC
             LIMIT %(top_k)s;
         """
         d["top_k"] = top_k or 5
