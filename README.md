@@ -1,7 +1,7 @@
 # Embedder
 I am currently modifying and testing this embedder, so it gains better and more accurate results. In the end, it should enhance the chatbot on [e-Infra documentation](https://docs.cerit.io/en/docs/news).
 
-Related project [questions_generator_GPT](https://github.com/sarkadol/questions_generator_GPT) - tool for generating questions using GPT models and testing this embedder.
+Related project [embedder_evaluator](https://github.com/sarkadol/embedder_evaluator) - tool for generating questions using GPT models and testing embedders.
 
 # How to start
 ## Build docker
