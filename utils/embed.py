@@ -123,7 +123,7 @@ def main():
         #embed_url = os.environ.get("EMBEDURL")
 
         # HARDCODED URL FOR TESTING
-        embed_url = "https://embedbase-dev.dyn.cloud.e-infra.cz/v1/test"
+        embed_url = "https://embedbase-dev.dyn.cloud.e-infra.cz/v1/test_2"
         if not embed_url:
             embed_url = "https://embedbase.dyn.cloud.e-infra.cz/v1/muni-documentation"
         print(f"EMBEDURL: {embed_url}")
