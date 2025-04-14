@@ -26,6 +26,9 @@ class CustomEmbedder(Embedder):
         # Customize based on your embedder's token limit
         return len(text) > 10000
 
+    def get_api_url(self) -> str:
+        return self.api_url
+
     async def embed(self, data: Union[List[str], str]) -> List[List[float]]:
         if isinstance(data, str):
             data = [data]

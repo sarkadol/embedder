@@ -75,6 +75,7 @@ class Embedbase:
         Use the chosen embedder to generate the embeddings.
         """
         self.logger.info(f"Enabling Embedder {embedder}")
+        self.logger.info(f"API URL: {embedder.get_api_url}")
         self.embedder = embedder
         return self
 
