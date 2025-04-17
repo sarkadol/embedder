@@ -83,8 +83,9 @@ def main():
         #filename = Path(file_path).name
         filename = Path(file_path).name.replace(".mdx", ".md")
 
-        print(f"Uploading: {filename}")
+        #print(f"\nUploading: {filename}")
         with open(full_path, "rb") as f:
+            print(f"\nUploading: {filename}, type {f}")
             response = requests.post(
                 f"{openwebui_url}/api/v1/knowledge/{knowledge_id}/file/add",
                 headers={"Authorization": f"Bearer {api_key}"},
@@ -94,7 +95,7 @@ def main():
                 msg = response.json()["detail"][0]["msg"]
             except Exception:
                 msg = response.text  # fallback if JSON parsing fails
-            print(f"➡️ {filename} → {response.status_code}: {msg}")
+            print(f"{filename} → {response.status_code}: {msg}")
 
 if __name__ == "__main__":
     main()
