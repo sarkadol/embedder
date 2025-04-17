@@ -45,12 +45,26 @@ def main():
     base_dir = "kube-docs/content/docs"
     collection = "kube-docs-collection"
     openwebui_url = "https://chat.ai.e-infra.cz"
-    with open("api_key.txt", "r", encoding="utf-8") as file:
+    with open("utils/api_key.txt", "r", encoding="utf-8") as file:
         api_key = file.read().strip()
 
     if not api_key:
         print("❌ Please set the OPENWEBUI_API_KEY environment variable.")
         return
+
+    # Check server connectivity by listing models
+    print("🔍 Checking server connectivity and API key...")
+    model_url = f"{openwebui_url}/api/models"
+    model_response = requests.get(model_url, headers={"Authorization": f"Bearer {api_key}"})
+
+    if model_response.status_code == 200:
+        model_data = model_response.json()
+        model_names = [m["id"] for m in model_data.get("data", [])]
+        print(f"✅ Connected! Models available: {model_names}")
+    else:
+        print(f"❌ Failed to connect or authenticate! Status {model_response.status_code}: {model_response.text}")
+        return
+
 
     all_files = []
 
