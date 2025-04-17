@@ -75,7 +75,7 @@ class Embedbase:
         Use the chosen embedder to generate the embeddings.
         """
         self.logger.info(f"Enabling Embedder {embedder}")
-        self.logger.info(f"API URL: {embedder.get_api_url}")
+        self.logger.info(f"API URL: {embedder.get_api_url()}")
         self.embedder = embedder
         return self
 
@@ -452,7 +452,7 @@ class Embedbase:
         query_embedding = (await self.embedder.embed(query))[0]
         embedding = json.dumps(query_embedding)
         self.logger.info(
-                f"Query '{request_body.query}' created embedding. Embedding size: {len(embedding)}. Querying index."
+                f"Query '{request_body.query}' created embedding. Embedding size: {len(query_embedding)}. Querying index."
         )
 
         # --- detect query language ---
