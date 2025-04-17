@@ -377,12 +377,9 @@ where
             original_metadata = row[5]
 
             #--------------------------
-            self.logger.info("postgres_db.py: query result:")
-            self.logger.info(f"ID: {original_id}")
-            self.logger.info(f"Score: {original_score}")
-            self.logger.info(f"Metadata: {original_metadata}")
             self.logger.info(
-                f"Chunk Path: {original_metadata.get('path') if isinstance(original_metadata, dict) else 'N/A'}")
+                f"postgres_db.py - query found answer in document: {original_metadata}. Score: {original_score} ID: {original_id}"
+            )
             #--------------------------
 
 
