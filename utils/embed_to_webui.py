@@ -80,7 +80,8 @@ def main():
 
     for file_path in unique_files:
         full_path = os.path.join(base_dir, file_path)
-        filename = Path(file_path).name
+        #filename = Path(file_path).name
+        filename = Path(file_path).name.replace(".mdx", ".md")
 
         print(f"Uploading: {filename}")
         with open(full_path, "rb") as f:
@@ -89,7 +90,11 @@ def main():
                 headers={"Authorization": f"Bearer {api_key}"},
                 files={"file": (filename, f)}
             )
-            print(f"➡️ {filename} → {response.status_code}: {response.text}")
+            try:
+                msg = response.json()["detail"][0]["msg"]
+            except Exception:
+                msg = response.text  # fallback if JSON parsing fails
+            print(f"➡️ {filename} → {response.status_code}: {msg}")
 
 if __name__ == "__main__":
     main()
