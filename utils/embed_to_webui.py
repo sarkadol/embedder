@@ -43,7 +43,7 @@ def process_meta(base_path, lang, current_dir=""):
 
 def main():
     base_dir = "kube-docs/content/docs"
-    collection = "kube-docs-collection"
+    knowledge_id = "4d2fcbeb-da01-4b36-9577-b57cf671fe77"
     openwebui_url = "https://chat.ai.e-infra.cz"
     with open("utils/api_key.txt", "r", encoding="utf-8") as file:
         api_key = file.read().strip()
@@ -85,7 +85,7 @@ def main():
         print(f"Uploading: {filename}")
         with open(full_path, "rb") as f:
             response = requests.post(
-                f"{openwebui_url}/api/knowledge/{collection}/files",
+                f"{openwebui_url}/api/v1/knowledge/{knowledge_id}/file/add",
                 headers={"Authorization": f"Bearer {api_key}"},
                 files={"file": (filename, f)}
             )
