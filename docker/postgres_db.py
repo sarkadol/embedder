@@ -29,6 +29,7 @@ class Postgres(VectorDatabase):
         super().__init__(**kwargs)
         self.logger.info("Starting DB")
         self.conn_str = conn_str
+        self.logger.info(f"Connecting to Postgres DB at {conn_str}")
 
         try:
             self.conn = psycopg.connect(conn_str, dbname="embedbase")
@@ -37,7 +38,7 @@ class Postgres(VectorDatabase):
             register_vector(self.conn)
             self.conn.execute(
                 f"""
-create table documents (
+create table if not exists documents (
     id text primary key,
     data text,
     embedding vector ({self._dimensions}),
