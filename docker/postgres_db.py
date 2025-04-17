@@ -347,7 +347,7 @@ where
         # q += ")"
         # -------------------------------
         self.logger.info(f"Query: {q}")
-        # self.logger.info(f"Params: {d}")
+        self.logger.info(f"Params: {d}")
         self.logger.info(f"chunk_context: {chunk_context}")
 
 
@@ -376,7 +376,7 @@ where
             original_metadata = row[5]
 
             #--------------------------
-            self.logger.info("==== New Row ====")
+            self.logger.info("postgres_db.py: query result:")
             self.logger.info(f"ID: {original_id}")
             self.logger.info(f"Score: {original_score}")
             self.logger.info(f"Metadata: {original_metadata}")
