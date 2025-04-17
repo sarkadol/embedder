@@ -1,14 +1,10 @@
+
 #!/usr/bin/python3
 import os
 import json
 import glob
-import re
 import requests
 from pathlib import Path
-from langchain.text_splitter import MarkdownTextSplitter
-
-chunksize = 1000
-chunkoverlap = 200
 
 def process_meta(base_path, lang, current_dir=""):
     meta_file = "meta.cz.json" if lang == "cz" else "meta.json"
@@ -47,19 +43,30 @@ def process_meta(base_path, lang, current_dir=""):
 
 def main():
     base_dir = "kube-docs/content/docs"
-    openwebui_url = "https://chat.ai.e-infra.cz"
     knowledge_id = "4d2fcbeb-da01-4b36-9577-b57cf671fe77"
-    upload_url = f"{openwebui_url}/api/v1/knowledge/{knowledge_id}/file/add"
-
+    openwebui_url = "https://chat.ai.e-infra.cz"
     with open("utils/api_key.txt", "r", encoding="utf-8") as file:
         api_key = file.read().strip()
 
     if not api_key:
-        print("❌ No API key found.")
+        print("❌ Please set the OPENWEBUI_API_KEY environment variable.")
         return
 
+    # Check server connectivity by listing models
+    print("🔍 Checking server connectivity and API key...")
+    model_url = f"{openwebui_url}/api/models"
+    model_response = requests.get(model_url, headers={"Authorization": f"Bearer {api_key}"})
+
+    if model_response.status_code == 200:
+        model_data = model_response.json()
+        model_names = [m["id"] for m in model_data.get("data", [])]
+        print(f"✅ Connected! Models available: {model_names}")
+    else:
+        print(f"❌ Failed to connect or authenticate! Status {model_response.status_code}: {model_response.text}")
+        return
+
+
     all_files = []
-    all_chunks = []
 
     for meta_path in glob.glob(os.path.join(base_dir, "meta*.json")):
         filename = os.path.basename(meta_path)
@@ -69,56 +76,27 @@ def main():
         all_files.extend(found_files)
 
     unique_files = sorted(set(all_files))
-    print(f"Found {len(unique_files)} unique files")
+    print(f"Found {len(unique_files)} unique .mdx files")
 
     for file_path in unique_files:
         full_path = os.path.join(base_dir, file_path)
-        with open(full_path, "r", encoding="utf-8") as f:
-            content = f.read()
-
         filename = Path(file_path).name
-        lang_prefix = "cz" if ".cz.mdx" in filename else "en"
-        doc_id = file_path.replace("index.mdx", "").rstrip("/")
-        metadata_path = f"/{lang_prefix}/docs/" + (doc_id.replace(".cz.mdx", "") if lang_prefix == "cz" else doc_id.replace(".mdx", ""))
+        #filename = Path(file_path).name.replace(".mdx", ".md")
 
-        title = ""
-        for line in content.split("\n"):
-            if line.startswith("title: "):
-                title = line.replace("title: ", "", 1).strip()
-                break
-
-        cleaned = re.sub(r"<[^>]+>", " ", content, flags=re.IGNORECASE)
-        cleaned = re.sub(r"\s+", " ", cleaned).strip()
-
-        splitter = MarkdownTextSplitter(chunk_size=chunksize, chunk_overlap=chunkoverlap)
-        chunks = splitter.create_documents([cleaned])
-
-        for i, chunk in enumerate(chunks):
-            all_chunks.append({
-                "data": chunk.page_content,
-                "metadata": {
-                    "path": metadata_path,
-                    "title": title,
-                    "chunknum": i,
-                    "lang": lang_prefix
-                }
-            })
-
-    print(f"Uploading {len(all_chunks)} chunks to OpenWebUI...")
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}"
-    }
-    response = requests.post(
-        upload_url,
-        json={"documents": all_chunks},
-        headers=headers
-    )
-    print(f"Response {response.status_code}")
-    try:
-        print(response.json())
-    except Exception:
-        print(response.text)
+        #print(f"\nUploading: {filename}")
+        with open(full_path, "rb") as f:
+            print(f"\nUploading: {filename}, type {type(f)}")
+            response = requests.post(
+                f"{openwebui_url}/api/v1/files/",
+                headers={"Authorization": f"Bearer {api_key}",
+                         'Accept': 'application/json'},
+                files={"file": f}
+            )
+            try:
+                msg = response.json()["detail"][0]["msg"]
+            except Exception:
+                msg = response.text  # fallback if JSON parsing fails
+            print(f"{filename} → {response.status_code}: {msg}")
 
 if __name__ == "__main__":
     main()
