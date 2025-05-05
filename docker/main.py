@@ -15,8 +15,8 @@ settings = get_settings_from_file(os.path.join(".", "config.yaml"))
 app = (
     get_app(settings)
    # .use_embedder(OpenAI(os.environ.get('OPENAI_APIKEY'), os.environ.get('OPENAI_ORGANISATION')))
-    .use_embedder(CustomEmbedder(api_url="https://vllm.ai.e-infra.cz/v1/embeddings"))
-    .use_db(Postgres(conn_str=os.environ.get('POSTGRES_URL'), dimensions=os.environ.get('DIMENSIONS')))
+    .use_embedder(CustomEmbedder(api_url="https://vllm.ai.e-infra.cz/v1")) # https://vllm.ai.e-infra.cz/v1/embeddings
+    .use_db(Postgres(conn_str=os.environ.get('POSTGRES_URL'), dimensions=1024)) # os.environ.get('DIMENSIONS')
     #.use_db(Postgres(conn_str=os.environ.get('POSTGRES_URL')))
 ).run()
 
