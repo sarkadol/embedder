@@ -37,11 +37,16 @@ class CustomEmbedder(Embedder):
 
         for item in data:
             try:
+                #payload = {
+                #    "model": "gritlm-7b:latest",
+                #    "input": item,
+                #    "encoding_format": "float"
+                #}
                 payload = {
-                    "model": "gritlm-7b:latest",
-                    "input": item,
-                    "encoding_format": "float"
+                    "model": "jina-embeddings-v3",
+                    "input": [item]
                 }
+
                 print("Sending payload:", json.dumps(payload, indent=2))
 
                 response = requests.post(
