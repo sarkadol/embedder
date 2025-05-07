@@ -124,7 +124,7 @@ def main():
 
         # HARDCODED URL FOR TESTING
         #embed_url = "https://embedbase-dev.dyn.cloud.e-infra.cz/v1/test_2"
-        embed_url = "https://embedbase-dev-1024.dyn.cloud.e-infra.cz/v1/test"
+        embed_url = "https://embedbase-dev-1024.dyn.cloud.e-infra.cz/v1/test_1024"
         if not embed_url:
             embed_url = "https://embedbase.dyn.cloud.e-infra.cz/v1/muni-documentation"
         print(f"EMBEDURL: {embed_url}")
