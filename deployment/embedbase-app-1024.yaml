@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embedbase-api-1024
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: embedbase-api-1024
+  template:
+    metadata:
+      labels:
+        app: embedbase-api-1024
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: embedbase-api
+        image: cerit.io/cerit/embedbase:dev3
+        imagePullPolicy: Always
+        env:
+        - name: PORT
+          value: '8081'
+        - name: POSTGRES_URL
+          value: 'postgresql://postgres:localdb@embedbase-db-1024-rw.blasko-ns.svc.cluster.local:5432/embedbase'
+        - name: OPENAI_APIKEY
+          valueFrom:
+            secretKeyRef:
+              key: OPENAI_APIKEY
+              name: openai
+        - name: OPENAI_ORGANISATION
+          valueFrom:
+            secretKeyRef:
+              key: OPENAI_ORGANISATION
+              name: openai
+        - name: DIMENSIONS
+          value: "1024"
+        - name: OPENAI_MODEL
+          value: 'intfloat/multilingual-e5-large-instruct'
+        - name: OPENAI_URL
+          value: 'http://10.43.74.230/v1/'
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 1Gi
+          limits:
+            cpu: 8
+            memory: 1Gi
+        volumeMounts:
+        - name: config
+          mountPath: /config.yaml
+          subPath: config.yaml
+      volumes:
+      - name: config
+        configMap:
+          name: config
