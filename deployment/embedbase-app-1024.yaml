@@ -24,7 +24,10 @@ spec:
         - name: PORT
           value: '8081'
         - name: POSTGRES_URL
-          value: 'postgresql://postgres:localdb@embedbase-db-1024-rw.blasko-ns.svc.cluster.local:5432/embedbase'
+          valueFrom:
+            secretKeyRef:
+              key: uri
+              name: embedbase-db-app
         - name: OPENAI_APIKEY
           valueFrom:
             secretKeyRef:
